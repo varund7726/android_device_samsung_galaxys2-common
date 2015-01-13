@@ -74,15 +74,11 @@ PRODUCT_PACKAGES += \
     camera.smdk4210 \
     dhcpcd.conf \
     gralloc.exynos4 \
-    hostapd \
-    hostapd_default.conf \
     hwcomposer.exynos4 \
-    libwpa_client \
     libnetcmdiface \
     lights.exynos4 \
     libhwconverter \
     libs5pjpeg \
-    wpa_supplicant \
     libfimg \
     libsecion
 
@@ -131,7 +127,7 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     ro.telephony.ril_class=SamsungExynos4RIL \
     ro.telephony.ril.config=fakeiccid \
-    mobiledata.interfaces=pdp0,wlan0,gprs,ppp0,rmnet0,rmnet1 \
+    mobiledata.interfaces=pdp0,gprs,ppp0,rmnet0,rmnet1 \
     ro.telephony.call_ring.multiple=false \
     ro.telephony.call_ring.delay=3000
 
@@ -152,6 +148,14 @@ PRODUCT_PACKAGES += \
     PhaseBeam \
     VisualizationWallpapers \
     librs_jni
+
+# Wifi
+PRODUCT_PACKAGES += \
+    libwpa_client \
+    hostapd \
+    hostapd_default.conf \
+    dhcpcd.conf \
+    wpa_supplicant
 
 # These are the hardware-specific features
 PRODUCT_COPY_FILES += \
