@@ -102,6 +102,7 @@ BOARD_USE_YAMAHA_MC1N2_AUDIO := true
 # RIL
 BOARD_PROVIDES_LIBRIL := true
 BOARD_MODEM_TYPE := xmm6260
+BOARD_NEEDS_SEC_RIL_WORKAROUND := true
 BOARD_RIL_CLASS := ../../../hardware/samsung/ril
 
 # Camera
