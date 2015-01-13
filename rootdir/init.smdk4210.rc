@@ -41,6 +41,7 @@ on fs
 
     mkdir /data/misc/vpn/profiles 0770 system system
     mkdir /data/misc/radio 0775 radio system
+    mkdir /data/radio 0770 radio radio
     chmod 0770 /data/misc/wifi 
 
 # Restorecon
@@ -345,6 +346,9 @@ service mdnsd /system/bin/mdnsd
     group inet net_raw
     socket mdnsd stream 0660 mdnsr inet
     disabled
+    oneshot
+
+service daemonsu_daemon /system/xbin/daemonsu --auto-daemon
     oneshot
 
 service p2p_supplicant /system/bin/wpa_supplicant \
