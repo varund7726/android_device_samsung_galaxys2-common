@@ -18,7 +18,8 @@
 # This variable is set first, so it can be overridden
 # by BoardConfigVendor.mk
 BOARD_USES_GENERIC_AUDIO := false
-
+BOARD_USE_SAMSUNG_COLORFORMAT := true
+USE_SAMSUNG_COLORFORMAT := true
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
