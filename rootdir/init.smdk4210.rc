@@ -44,6 +44,14 @@ on fs
     mkdir /data/radio 0770 radio radio
     chmod 0770 /data/misc/wifi 
 
+on charger
+
+# CPU Frequency Governor
+	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
+
+# EHCI runtime enable for LPA
+	write /sys/devices/platform/s5p-ehci/power/control auto
+
 # Restorecon
     restorecon /efs/nv_data.bin
     restorecon /efs/nv_data.bin.md5
@@ -173,6 +181,7 @@ on post-fs-data
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/video
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/batt_lp_charging
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/charging_source
+    chown system radio /sys/devices/platform/sec-battery/power_supply/battery/charging_enabled
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/batt_temp_adc_avg
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/batt_temp_adc
     chown system radio /sys/devices/platform/sec-battery/power_supply/battery/batt_temp
@@ -351,6 +360,11 @@ service mdnsd /system/bin/mdnsd
     socket mdnsd stream 0660 mdnsr inet
     disabled
     oneshot
+
+service charger /sbin/healthd -c
+	class charger
+	critical
+	seclabel u:r:healthd:s0
 
 service daemonsu_daemon /system/xbin/daemonsu --auto-daemon
     oneshot
