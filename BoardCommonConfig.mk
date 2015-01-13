@@ -155,14 +155,32 @@ BOARD_SEPOLICY_DIRS += \
     device/samsung/galaxys2-common/selinux
 
 BOARD_SEPOLICY_UNION += \
+    bluetooth.te \
+    radio.te \
+    file_contexts \
+    te_macros \
     device.te \
-    drmserver.te \
-    ueventd.te \
+    dhcp.te \
     domain.te \
     file.te \
-    file_contexts \
+    init.te \
+    kickstart.te \
+    mediaserver.te \
+    netmgrd.te \
+    qmiproxy.te \
+    qmuxd.te \
     rild.te \
-    vold.te
+    secril.te \
+    servicemanager.te \
+    sysinit.te \
+    system.te \
+    system_server.te \
+    time_daemon.te \
+    ueventd.te \
+    vold.te \
+    wpa.te \
+    wpa_supplicant.te \
+    zygote.te
 
 # Recovery
 BOARD_CUSTOM_RECOVERY_KEYMAPPING := ../../device/samsung/galaxys2-common/recovery/recovery_keys.c
