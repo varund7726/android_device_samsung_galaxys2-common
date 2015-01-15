@@ -24,4 +24,7 @@
     <!-- Use ZSL mode -->
     <bool name="enableZSL">true</bool>
     <bool name="useContinuosFocusForTouch">true</bool>
+
+    <!-- Set early video size -->
+    <bool name="needsEarlyVideoSize">true</bool>
 </resources>
