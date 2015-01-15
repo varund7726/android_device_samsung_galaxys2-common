@@ -98,10 +98,12 @@ PRODUCT_PACKAGES += \
     libsecosal \
     libSEC_OMX_Resourcemanager \
     libSEC_OMX_Core \
+    libSEC_OMX_Vdec \
     libOMX.SEC.AVC.Decoder \
     libOMX.SEC.M4V.Decoder \
     libOMX.SEC.WMV.Decoder \
     libOMX.SEC.AVC.Encoder \
+    libSEC_OMX_Venc \
     libOMX.SEC.M4V.Encoder
 #   libOMX.SEC.VP8.Decoder
 
