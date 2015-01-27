@@ -6,6 +6,8 @@ type modem_block_device, dev_type;
 type diagnostic_device, dev_type;
 type efs_block_device, dev_type;
 type mmc_block_device, dev_type;
+type vibe_device, dev_type;
+type lcd_device, dev_type;
 
 #SSR device
 type ssr_device, dev_type;
