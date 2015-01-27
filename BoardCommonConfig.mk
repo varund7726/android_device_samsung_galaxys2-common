@@ -174,6 +174,7 @@ BOARD_SEPOLICY_UNION += \
     lcd_device.te \
     mediaserver.te \
     netmgrd.te \
+    platform_app.te \
     qmiproxy.te \
     qmuxd.te \
     rild.te \
