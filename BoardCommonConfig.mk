@@ -163,6 +163,7 @@ BOARD_SEPOLICY_UNION += \
     radio.te \
     file_contexts \
     te_macros \
+    debuggerd.te \
     device.te \
     dhcp.te \
     domain.te \
