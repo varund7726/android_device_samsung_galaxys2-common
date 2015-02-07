@@ -344,9 +344,6 @@ on boot
     setprop status.battery.level_raw  50
     setprop status.battery.level_scale 9
 
-# Wifi display
-    write /proc/sys/net/core/wmem_max   262144
-
 # For RIL
 service cpboot-daemon /sbin/cbd -d -p 8
     class main
