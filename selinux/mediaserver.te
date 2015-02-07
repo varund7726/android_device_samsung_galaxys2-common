@@ -7,3 +7,4 @@ allow mediaserver volume_data_file:file create_file_perms;
 allow mediaserver volume_data_file:dir create_dir_perms;
 allow mediaserver mfc_device:chr_file rw_file_perms;
 allow mediaserver system_data_file:file { write open };
+allow mediaserver video_device:chr_file { read write };
