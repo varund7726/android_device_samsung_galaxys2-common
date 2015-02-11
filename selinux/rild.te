@@ -27,11 +27,11 @@ allow rild diagnostic_device:chr_file { read write open };
 allow rild radio_data_file:dir { setattr };
 
 allow rild radio_device:chr_file { read write };
-allow rild dumpstate_exec:file { getattr execute };
+allow rild dumpstate_exec:file { read open getattr execute };
 allow rild block_device:dir search;
 allow rild mmc_block_device:blk_file { read open };
 allow rild unlabeled:dir search;
-allow rild unlabeled:file { read open getattr };
+allow rild unlabeled:file { read write append open getattr setattr };
 
 
 
