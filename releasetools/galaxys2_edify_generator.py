@@ -30,11 +30,11 @@ class EdifyGenerator(edify_generator.EdifyGenerator):
       """Write the given package file into the given partition."""
 
       args = {'partition': partition, 'image': image}
-
-      self.script.append(
-            ('assert(package_extract_file("%(image)s", "/tmp/%(image)s"),\n'
-             '       write_raw_image("/tmp/%(image)s", "%(partition)s"),\n'
-             '       delete("/tmp/%(image)s"));') % args)
+      
+           self.script.append(
+        ('assert(package_extract_file("%(partition)s", "/tmp/%(partition)s"));\n'
+         'write_raw_image("/tmp/%(partition)s", "%(image)s");\n'
+         'delete("/tmp/%(partition)s");') % args)
 
     def Unmount(self, mount_point):
       """Unmount the partition with the given mount_point."""
