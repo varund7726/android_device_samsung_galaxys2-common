@@ -10,6 +10,7 @@ allow init init:packet_socket { create bind write read };
 allow init init:rawip_socket { create setopt write };
 
 allow init_shell init:packet_socket { read write };
+allow init kernel:system { write syslog_read };
 
 
 
