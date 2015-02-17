@@ -50,7 +50,7 @@
 	 ActivityManager based on screen size and total memory for the largest lowmemorykiller
 	 bucket, and scaled proportionally to the smaller buckets. 0 keeps the default.
 	 Below will adj 6 minfree buckets (in MB) to: 36, 45, 54, 63, 110, 160 -->
-    <integer name="config_lowMemoryKillerMinFreeKbytesAbsolute">163840</integer>
+    <integer name="config_lowMemoryKillerMinFreeKbytesAbsolute">87040</integer>
 
     <!-- XXXXX NOTE THE FOLLOWING RESOURCES USE THE WRONG NAMING CONVENTION.
          Please don't copy them, copy anything else. -->
