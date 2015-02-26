@@ -58,7 +58,7 @@ struct exynos_camera_preset exynos_camera_presets_galaxys2[] = {
 		.vertical_view_angle = 47.1f,
 		.metering = METERING_CENTER,
 		.params = {
-			.preview_size_values = "1280x720,640x480,720x480,800x480,800x450,352x288,320x240,176x144",
+			.preview_size_values = "1280x720,1024x768,1024x576,800x600,720x480,640x480,528x432,352x288,320x240,176x144",
 			.preview_size = "640x480",
 			.preview_format_values = "yuv420sp,yuv420p,rgb565",
 			.preview_format = "yuv420sp",
@@ -80,8 +80,8 @@ struct exynos_camera_preset exynos_camera_presets_galaxys2[] = {
 			.video_snapshot_supported = 0,
 			.full_video_snap_supported = 0,
 
-			.recording_size = "720x480",
-			.recording_size_values = "1920x1080,1280x720,720x480,640x480",
+			.recording_size = "1280x720",
+			.recording_size_values = "1920x1080,1280x720,640x480",
 			.recording_format = "yuv420sp",
 
 			.focus_mode = "auto",
