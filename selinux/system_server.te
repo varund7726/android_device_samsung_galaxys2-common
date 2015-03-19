@@ -6,4 +6,5 @@ allow system_server efs_file:file rw_file_perms;
 allow system_server default_prop:property_service set;
 allow system_server sensors_device:chr_file { read write };
 allow system_server unlabeled:file write;
-allow system_server lcd_device:file write;
+allow system_server lcd_device:file { read write open ioctl getattr };
+allow system_server vibe_device:file { read write open ioctl getattr };
