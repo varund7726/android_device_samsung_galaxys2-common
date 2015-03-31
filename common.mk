@@ -200,6 +200,13 @@ $(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.isUsbOtgEnabled=true
 
+# Low RAM properties
+MALLOC_IMPL := dlmalloc
+
+PRODUCT_PROPERTY_OVERRIDES += \
+    ro.config.max_starting_bg=8 \
+    ro.sys.fw.bg_apps_limit=8
+
 # Include exynos4 platform specific parts
 TARGET_HAL_PATH := hardware/samsung/exynos4/hal
 TARGET_OMX_PATH := hardware/samsung/exynos/multimedia/openmax
