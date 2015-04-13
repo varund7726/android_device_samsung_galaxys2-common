@@ -20,10 +20,11 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES := \
-	exynos_camera.c \
-	exynos_exif.c \
-	exynos_param.c \
-	exynos_v4l2.c
+	smdk4210_camera.c \
+	smdk4210_exif.c \
+	smdk4210_param.c \
+	smdk4210_utils.c \
+	smdk4210_v4l2.c
 
 LOCAL_C_INCLUDES := \
 	system/media/camera/include \
