@@ -1,9 +1,9 @@
 /*
- * Copyright (C) 2013 Paul Kocialkowski <contact@paulk.fr>
+ * Copyright (C) 2013 Paul Kocialkowski
  *
  * Based on crespo libcamera and exynos4 hal libcamera:
- * Copyright 2008, The Android Open Source Project, Apache License 2.0
- * Copyright 2010, Samsung Electronics Co. LTD, Apache License 2.0
+ * Copyright 2008, The Android Open Source Project
+ * Copyright 2010, Samsung Electronics Co. LTD
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,20 +33,24 @@
 
 #include <Exif.h>
 
-#define LOG_TAG "smdk4210_camera"
+#define LOG_TAG "exynos_camera"
 #include <utils/Log.h>
 #include <cutils/properties.h>
 
-#include "smdk4210_camera.h"
+#include "exynos_camera.h"
 
-int smdk4210_exif_attributes_create_static(struct smdk4210_camera *smdk4210_camera,
+/*
+ * FIXME: This EXIF implementation doesn't work very well, it needs to be fixed.
+ */
+
+int exynos_exif_attributes_create_static(struct exynos_camera *exynos_camera,
 	exif_attribute_t *exif_attributes)
 {
 	unsigned char gps_version[] = { 0x02, 0x02, 0x00, 0x00 };
 	char property[PROPERTY_VALUE_MAX];
 	uint32_t av;
 
-	if (smdk4210_camera == NULL || exif_attributes == NULL)
+	if (exynos_camera == NULL || exif_attributes == NULL)
 		return -EINVAL;
 
 	// Device
@@ -99,7 +103,7 @@ int smdk4210_exif_attributes_create_static(struct smdk4210_camera *smdk4210_came
 	return 0;
 }
 
-int smdk4210_exif_attributes_create_gps(struct smdk4210_camera *smdk4210_camera,
+int exynos_exif_attributes_create_gps(struct exynos_camera *exynos_camera,
 	exif_attribute_t *exif_attributes)
 {
 	float gps_latitude_float, gps_longitude_float, gps_altitude_float;
@@ -111,16 +115,16 @@ int smdk4210_exif_attributes_create_gps(struct smdk4210_camera *smdk4210_camera,
 
 	struct tm time_info;
 
-	if (smdk4210_camera == NULL || exif_attributes == NULL)
+	if (exynos_camera == NULL || exif_attributes == NULL)
 		return -EINVAL;
 
-	gps_latitude_float = smdk4210_param_float_get(smdk4210_camera, "gps-latitude");
-	gps_longitude_float = smdk4210_param_float_get(smdk4210_camera, "gps-longitude");
-	gps_altitude_float = smdk4210_param_float_get(smdk4210_camera, "gps-altitude");
+	gps_latitude_float = exynos_param_float_get(exynos_camera, "gps-latitude");
+	gps_longitude_float = exynos_param_float_get(exynos_camera, "gps-longitude");
+	gps_altitude_float = exynos_param_float_get(exynos_camera, "gps-altitude");
 	if (gps_altitude_float == -1)
-		gps_altitude_float = (float) smdk4210_param_int_get(smdk4210_camera, "gps-altitude");
-	gps_timestamp_int = smdk4210_param_int_get(smdk4210_camera, "gps-timestamp");
-	gps_processing_method_string = smdk4210_param_string_get(smdk4210_camera, "gps-processing-method");
+		gps_altitude_float = (float) exynos_param_int_get(exynos_camera, "gps-altitude");
+	gps_timestamp_int = exynos_param_int_get(exynos_camera, "gps-timestamp");
+	gps_processing_method_string = exynos_param_string_get(exynos_camera, "gps-processing-method");
 
 	if (gps_latitude_float == -1 || gps_longitude_float == -1 ||
 		gps_altitude_float == -1 || gps_timestamp_int <= 0 ||
@@ -192,7 +196,7 @@ int smdk4210_exif_attributes_create_gps(struct smdk4210_camera *smdk4210_camera,
 	return 0;
 }
 
-int smdk4210_exif_attributes_create_params(struct smdk4210_camera *smdk4210_camera,
+int exynos_exif_attributes_create_params(struct exynos_camera *exynos_camera,
 	exif_attribute_t *exif_attributes)
 {
 	uint32_t av, tv, bv, sv, ev;
@@ -207,20 +211,20 @@ int smdk4210_exif_attributes_create_params(struct smdk4210_camera *smdk4210_came
 
 	int rc;
 
-	if (smdk4210_camera == NULL || exif_attributes == NULL)
+	if (exynos_camera == NULL || exif_attributes == NULL)
 		return -EINVAL;
 
 	// Picture size
-	exif_attributes->width = smdk4210_camera->picture_width;
-	exif_attributes->height = smdk4210_camera->picture_height;
+	exif_attributes->width = exynos_camera->picture_width;
+	exif_attributes->height = exynos_camera->picture_height;
 
 	// Thumbnail
-	exif_attributes->widthThumb = smdk4210_camera->jpeg_thumbnail_width;
-	exif_attributes->heightThumb = smdk4210_camera->jpeg_thumbnail_height;
+	exif_attributes->widthThumb = exynos_camera->jpeg_thumbnail_width;
+	exif_attributes->heightThumb = exynos_camera->jpeg_thumbnail_height;
 	exif_attributes->enableThumb = true;
 
 	// Orientation
-	rotation = smdk4210_param_int_get(smdk4210_camera, "rotation");
+	rotation = exynos_param_int_get(exynos_camera, "rotation");
 	switch (rotation) {
 		case 90:
 			exif_attributes->orientation = EXIF_ORIENTATION_90;
@@ -243,11 +247,11 @@ int smdk4210_exif_attributes_create_params(struct smdk4210_camera *smdk4210_came
 	strftime((char *) exif_attributes->date_time, sizeof(exif_attributes->date_time),
 		"%Y:%m:%d %H:%M:%S", time_info);
 
-	exif_attributes->focal_length.num = smdk4210_camera->camera_focal_length;
+	exif_attributes->focal_length.num = exynos_camera->camera_focal_length;
 	exif_attributes->focal_length.den = EXIF_DEF_FOCAL_LEN_DEN;
 
 	shutter_speed = 100;
-	rc = smdk4210_v4l2_g_ctrl(smdk4210_camera, 0, V4L2_CID_CAMERA_EXIF_TV,
+	rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_TV,
 		&shutter_speed);
 	if (rc < 0)
 		ALOGE("%s: g ctrl failed!", __func__);
@@ -255,31 +259,40 @@ int smdk4210_exif_attributes_create_params(struct smdk4210_camera *smdk4210_came
 	exif_attributes->shutter_speed.num = shutter_speed;
 	exif_attributes->shutter_speed.den = 100;
 
+	/* the exposure_time value read from the camera doesn't work
+	 * exposure_time = shutter_speed;
+	 * rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_EXPTIME,
+	 * 	&exposure_time);
+	 * if (rc < 0)
+	 *	ALOGE("%s: g ctrl failed!", __func__);
+	 */
+
+	// calculate exposure time from the shutter speed value instead
 	exif_attributes->exposure_time.num = 1;
 	exif_attributes->exposure_time.den = APEX_SHUTTER_TO_EXPOSURE(shutter_speed);
 
-	rc = smdk4210_v4l2_g_ctrl(smdk4210_camera, 0, V4L2_CID_CAMERA_EXIF_ISO,
+	rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_ISO,
 		&iso_speed);
 	if (rc < 0)
 		ALOGE("%s: g ctrl failed!", __func__);
 
 	exif_attributes->iso_speed_rating = iso_speed;
 
-	rc = smdk4210_v4l2_g_ctrl(smdk4210_camera, 0, V4L2_CID_CAMERA_EXIF_FLASH,
+	rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_FLASH,
 		&flash_results);
 	if (rc < 0)
 		ALOGE("%s: g ctrl failed!", __func__);
 
 	exif_attributes->flash = flash_results;
 
-	rc = smdk4210_v4l2_g_ctrl(smdk4210_camera, 0, V4L2_CID_CAMERA_EXIF_BV,
+	rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_BV,
 		(int *) &bv);
 	if (rc < 0) {
 		ALOGE("%s: g ctrl failed!", __func__);
 		goto bv_static;
 	}
 
-	rc = smdk4210_v4l2_g_ctrl(smdk4210_camera, 0, V4L2_CID_CAMERA_EXIF_EBV,
+	rc = exynos_v4l2_g_ctrl(exynos_camera, 0, V4L2_CID_CAMERA_EXIF_EBV,
 		(int *) &ev);
 	if (rc < 0) {
 		ALOGE("%s: g ctrl failed!", __func__);
@@ -289,7 +302,7 @@ int smdk4210_exif_attributes_create_params(struct smdk4210_camera *smdk4210_came
 	goto bv_ioctl;
 
 bv_static:
-	exposure = smdk4210_param_int_get(smdk4210_camera, "exposure-compensation");
+	exposure = exynos_param_int_get(exynos_camera, "exposure-compensation");
 	if (exposure < 0)
 		exposure = EV_DEFAULT;
 
@@ -305,7 +318,7 @@ bv_ioctl:
 	exif_attributes->brightness.num = bv;
 	exif_attributes->brightness.den = EXIF_DEF_APEX_DEN;
 
-	if (smdk4210_camera->scene_mode == SCENE_MODE_BEACH_SNOW) {
+	if (exynos_camera->scene_mode == SCENE_MODE_BEACH_SNOW) {
 		exif_attributes->exposure_bias.num = EXIF_DEF_APEX_DEN;
 		exif_attributes->exposure_bias.den = EXIF_DEF_APEX_DEN;
 	} else {
@@ -313,7 +326,7 @@ bv_ioctl:
 		exif_attributes->exposure_bias.den = EXIF_DEF_APEX_DEN;
 	}
 
-	switch (smdk4210_camera->camera_metering) {
+	switch (exynos_camera->camera_metering) {
 		case METERING_CENTER:
 			exif_attributes->metering_mode = EXIF_METERING_CENTER;
 			break;
@@ -328,13 +341,13 @@ bv_ioctl:
 			break;
 	}
 
-	if (smdk4210_camera->whitebalance == WHITE_BALANCE_AUTO ||
-		smdk4210_camera->whitebalance == WHITE_BALANCE_BASE)
+	if (exynos_camera->whitebalance == WHITE_BALANCE_AUTO ||
+		exynos_camera->whitebalance == WHITE_BALANCE_BASE)
 		exif_attributes->white_balance = EXIF_WB_AUTO;
 	else
 		exif_attributes->white_balance = EXIF_WB_MANUAL;
 
-	switch (smdk4210_camera->scene_mode) {
+	switch (exynos_camera->scene_mode) {
 		case SCENE_MODE_PORTRAIT:
 			exif_attributes->scene_capture_type = EXIF_SCENE_PORTRAIT;
 			break;
@@ -349,7 +362,7 @@ bv_ioctl:
 			break;
 	}
 
-	rc = smdk4210_exif_attributes_create_gps(smdk4210_camera, exif_attributes);
+	rc = exynos_exif_attributes_create_gps(exynos_camera, exif_attributes);
 	if (rc < 0) {
 		ALOGE("%s: Failed to create GPS attributes", __func__);
 		return -1;
@@ -358,8 +371,8 @@ bv_ioctl:
 	return 0;
 }
 
-int smdk4210_exif_write_data(void *exif_data, unsigned short tag,
-	unsigned short type, unsigned int count, unsigned int *offset, void *start,
+int exynos_exif_write_data(void *exif_data, unsigned short tag,
+	unsigned short type, unsigned int count, int *offset, void *start,
 	void *data, int length)
 {
 	unsigned char *pointer;
@@ -394,9 +407,9 @@ int smdk4210_exif_write_data(void *exif_data, unsigned short tag,
 	return size;
 }
 
-int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
+int exynos_exif_create(struct exynos_camera *exynos_camera,
 	exif_attribute_t *exif_attributes,
-	void *jpeg_thumbnail_data, int jpeg_thumbnail_size,
+	camera_memory_t *jpeg_thumbnail_data_memory, int jpeg_thumbnail_size,
 	camera_memory_t **exif_data_memory_p, int *exif_size_p)
 {
 	// Markers
@@ -408,12 +421,12 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 	unsigned char user_comment_code[] = { 0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0 };
 	unsigned char exif_ascii_prefix[] = { 0x41, 0x53, 0x43, 0x49, 0x49, 0x0, 0x0, 0x0 };
 
-	camera_memory_t *exif_data_memory = NULL;
+	camera_memory_t *exif_data_memory;
 	void *exif_data;
 	int exif_data_size;
 	int exif_size;
 
-	void *exif_ifd_data_start, *exif_ifd_start, *exif_ifd_thumb, *exif_ifd_gps = NULL;
+	void *exif_ifd_data_start, *exif_ifd_start, *exif_ifd_gps, *exif_ifd_thumb;
 
 	void *exif_thumb_data;
 	unsigned int exif_thumb_size;
@@ -425,15 +438,15 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 
 	unsigned int value;
 
-	if (smdk4210_camera == NULL || exif_attributes == NULL ||
-		jpeg_thumbnail_data == NULL || jpeg_thumbnail_size <= 0 ||
+	if (exynos_camera == NULL || exif_attributes == NULL ||
+		jpeg_thumbnail_data_memory == NULL || jpeg_thumbnail_size <= 0 ||
 		exif_data_memory_p == NULL || exif_size_p == NULL)
 		return -EINVAL;
 
 	exif_data_size = EXIF_FILE_SIZE + jpeg_thumbnail_size;
 
-	if (smdk4210_camera->callbacks.request_memory != NULL) {
-		exif_data_memory = smdk4210_camera->callbacks.request_memory(-1,
+	if (exynos_camera->callbacks.request_memory != NULL) {
+		exif_data_memory = exynos_camera->callbacks.request_memory(-1,
 			exif_data_size, 1, 0);
 		if (exif_data_memory == NULL) {
 			ALOGE("%s: exif memory request failed!", __func__);
@@ -473,42 +486,42 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 	offset = 8 + NUM_SIZE + value * IFD_SIZE + OFFSET_SIZE;
 
 	// Write EXIF data
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_IMAGE_WIDTH,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_IMAGE_WIDTH,
 		EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->width, sizeof(exif_attributes->width));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_IMAGE_HEIGHT,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_IMAGE_HEIGHT,
 		EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->height, sizeof(exif_attributes->height));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_MAKE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_MAKE,
 		EXIF_TYPE_ASCII, strlen((char *) exif_attributes->maker) + 1,
 		&offset, exif_ifd_start, &exif_attributes->maker, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_MODEL,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_MODEL,
 		EXIF_TYPE_ASCII, strlen((char *) exif_attributes->model) + 1,
 		&offset, exif_ifd_start, &exif_attributes->model, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_ORIENTATION,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_ORIENTATION,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->orientation, sizeof(exif_attributes->orientation));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_SOFTWARE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_SOFTWARE,
 		EXIF_TYPE_ASCII, strlen((char *) exif_attributes->software) + 1,
 		&offset, exif_ifd_start, &exif_attributes->software, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_DATE_TIME,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_DATE_TIME,
 		EXIF_TYPE_ASCII, 20, &offset, exif_ifd_start, &exif_attributes->date_time, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_YCBCR_POSITIONING,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_YCBCR_POSITIONING,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->ycbcr_positioning, sizeof(exif_attributes->ycbcr_positioning));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXIF_IFD_POINTER,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXIF_IFD_POINTER,
 		EXIF_TYPE_LONG, 1, NULL, NULL, &offset, sizeof(offset));
 	pointer += count;
 
@@ -529,63 +542,63 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 
 	offset += NUM_SIZE + NUM_0TH_IFD_EXIF * IFD_SIZE + OFFSET_SIZE;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXPOSURE_TIME,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXPOSURE_TIME,
 		EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->exposure_time, sizeof(exif_attributes->exposure_time));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_FNUMBER,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_FNUMBER,
 		EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->fnumber, sizeof(exif_attributes->fnumber));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXPOSURE_PROGRAM,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXPOSURE_PROGRAM,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->exposure_program, sizeof(exif_attributes->exposure_program));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_ISO_SPEED_RATING,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_ISO_SPEED_RATING,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->iso_speed_rating, sizeof(exif_attributes->iso_speed_rating));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXIF_VERSION,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXIF_VERSION,
 		EXIF_TYPE_UNDEFINED, 4, NULL, NULL, &exif_attributes->exif_version, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_DATE_TIME_ORG,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_DATE_TIME_ORG,
 		EXIF_TYPE_ASCII, 20, &offset, exif_ifd_start, &exif_attributes->date_time, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_DATE_TIME_DIGITIZE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_DATE_TIME_DIGITIZE,
 		EXIF_TYPE_ASCII, 20, &offset, exif_ifd_start, &exif_attributes->date_time, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_SHUTTER_SPEED,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_SHUTTER_SPEED,
 		EXIF_TYPE_SRATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->shutter_speed, sizeof(exif_attributes->shutter_speed));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_APERTURE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_APERTURE,
 		EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->aperture, sizeof(exif_attributes->aperture));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_BRIGHTNESS,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_BRIGHTNESS,
 		EXIF_TYPE_SRATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->brightness, sizeof(exif_attributes->brightness));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXPOSURE_BIAS,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXPOSURE_BIAS,
 		EXIF_TYPE_SRATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->exposure_bias, sizeof(exif_attributes->exposure_bias));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_MAX_APERTURE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_MAX_APERTURE,
 		EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->max_aperture, sizeof(exif_attributes->max_aperture));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_METERING_MODE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_METERING_MODE,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->metering_mode, sizeof(exif_attributes->metering_mode));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_FLASH,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_FLASH,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->flash, sizeof(exif_attributes->flash));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_FOCAL_LENGTH,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_FOCAL_LENGTH,
 		EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->focal_length, sizeof(exif_attributes->focal_length));
 	pointer += count;
 
@@ -593,31 +606,31 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 	memmove(exif_attributes->user_comment + sizeof(user_comment_code), exif_attributes->user_comment, value);
 	memcpy(exif_attributes->user_comment, user_comment_code, sizeof(user_comment_code));
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_USER_COMMENT,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_USER_COMMENT,
 		EXIF_TYPE_UNDEFINED, value + sizeof(user_comment_code), &offset, exif_ifd_start, &exif_attributes->user_comment, sizeof(char));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_COLOR_SPACE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_COLOR_SPACE,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->color_space, sizeof(exif_attributes->color_space));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_PIXEL_X_DIMENSION,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_PIXEL_X_DIMENSION,
 		EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->width, sizeof(exif_attributes->width));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_PIXEL_Y_DIMENSION,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_PIXEL_Y_DIMENSION,
 		EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->height, sizeof(exif_attributes->height));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_EXPOSURE_MODE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_EXPOSURE_MODE,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->exposure_mode, sizeof(exif_attributes->exposure_mode));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_WHITE_BALANCE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_WHITE_BALANCE,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->white_balance, sizeof(exif_attributes->white_balance));
 	pointer += count;
 
-	count = smdk4210_exif_write_data(pointer, EXIF_TAG_SCENCE_CAPTURE_TYPE,
+	count = exynos_exif_write_data(pointer, EXIF_TAG_SCENCE_CAPTURE_TYPE,
 		EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->scene_capture_type, sizeof(exif_attributes->scene_capture_type));
 	pointer += count;
 
@@ -628,10 +641,10 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 	// GPS
 	if (exif_attributes->enableGps) {
 		pointer = (unsigned char *) exif_ifd_gps;
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_IFD_POINTER,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_IFD_POINTER,
 			EXIF_TYPE_LONG, 1, NULL, NULL, &offset, sizeof(offset));
 
-		pointer = (unsigned char *) exif_ifd_start + offset;
+		pointer = exif_ifd_start + offset;
 
 		if (exif_attributes->gps_processing_method[0] == 0)
 			value = NUM_0TH_IFD_GPS - 1;
@@ -643,35 +656,35 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 
 		offset += NUM_SIZE + value * IFD_SIZE + OFFSET_SIZE;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_VERSION_ID,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_VERSION_ID,
 			EXIF_TYPE_BYTE, 4, NULL, NULL, &exif_attributes->gps_version_id, sizeof(char));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_LATITUDE_REF,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_LATITUDE_REF,
 			EXIF_TYPE_ASCII, 2, NULL, NULL, &exif_attributes->gps_latitude_ref, sizeof(char));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_LATITUDE,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_LATITUDE,
 			EXIF_TYPE_RATIONAL, 3, &offset, exif_ifd_start, &exif_attributes->gps_latitude, sizeof(exif_attributes->gps_latitude[0]));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_LONGITUDE_REF,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_LONGITUDE_REF,
 			EXIF_TYPE_ASCII, 2, NULL, NULL, &exif_attributes->gps_longitude_ref, sizeof(char));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_LONGITUDE,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_LONGITUDE,
 			EXIF_TYPE_RATIONAL, 3, &offset, exif_ifd_start, &exif_attributes->gps_longitude, sizeof(exif_attributes->gps_longitude[0]));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_ALTITUDE_REF,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_ALTITUDE_REF,
 			EXIF_TYPE_BYTE, 1, NULL, NULL, &exif_attributes->gps_altitude_ref, sizeof(char));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_ALTITUDE,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_ALTITUDE,
 			EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->gps_altitude, sizeof(exif_attributes->gps_altitude));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_TIMESTAMP,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_TIMESTAMP,
 			EXIF_TYPE_RATIONAL, 3, &offset, exif_ifd_start, &exif_attributes->gps_timestamp, sizeof(exif_attributes->gps_timestamp[0]));
 		pointer += count;
 
@@ -683,14 +696,14 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 			memcpy(data, &exif_ascii_prefix, sizeof(exif_ascii_prefix));
 			memcpy((void *) ((int) data + (int) sizeof(exif_ascii_prefix)), exif_attributes->gps_processing_method, value);
 
-			count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_PROCESSING_METHOD,
+			count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_PROCESSING_METHOD,
 				EXIF_TYPE_UNDEFINED, value + sizeof(exif_ascii_prefix), &offset, exif_ifd_start, data, sizeof(char));
 			pointer += count;
 
 			free(data);
 		}
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_GPS_DATESTAMP,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_GPS_DATESTAMP,
 				EXIF_TYPE_ASCII, 11, &offset, exif_ifd_start, &exif_attributes->gps_datestamp, 1);
 		pointer += count;
 
@@ -699,9 +712,9 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 		pointer += OFFSET_SIZE;
 	}
 
-	if (exif_attributes->enableThumb && jpeg_thumbnail_data != NULL && jpeg_thumbnail_size > 0) {
+	if (exif_attributes->enableThumb && jpeg_thumbnail_data_memory != NULL && jpeg_thumbnail_size > 0) {
 		exif_thumb_size = (unsigned int) jpeg_thumbnail_size;
-		exif_thumb_data = (void *) jpeg_thumbnail_data;
+		exif_thumb_data = (void *) jpeg_thumbnail_data_memory->data;
 
 		value = offset;
 		memcpy(exif_ifd_thumb, &value, OFFSET_SIZE);
@@ -714,39 +727,39 @@ int smdk4210_exif_create(struct smdk4210_camera *smdk4210_camera,
 
 		offset += NUM_SIZE + NUM_1TH_IFD_TIFF * IFD_SIZE + OFFSET_SIZE;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_IMAGE_WIDTH,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_IMAGE_WIDTH,
 				EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->widthThumb, sizeof(exif_attributes->widthThumb));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_IMAGE_HEIGHT,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_IMAGE_HEIGHT,
 				EXIF_TYPE_LONG, 1, NULL, NULL, &exif_attributes->heightThumb, sizeof(exif_attributes->heightThumb));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_COMPRESSION_SCHEME,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_COMPRESSION_SCHEME,
 				EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->compression_scheme, sizeof(exif_attributes->compression_scheme));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_ORIENTATION,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_ORIENTATION,
 				EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->orientation, sizeof(exif_attributes->orientation));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_X_RESOLUTION,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_X_RESOLUTION,
 				EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->x_resolution, sizeof(exif_attributes->x_resolution));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_Y_RESOLUTION,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_Y_RESOLUTION,
 				EXIF_TYPE_RATIONAL, 1, &offset, exif_ifd_start, &exif_attributes->y_resolution, sizeof(exif_attributes->y_resolution));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_RESOLUTION_UNIT,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_RESOLUTION_UNIT,
 				EXIF_TYPE_SHORT, 1, NULL, NULL, &exif_attributes->resolution_unit, sizeof(exif_attributes->resolution_unit));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_JPEG_INTERCHANGE_FORMAT,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_JPEG_INTERCHANGE_FORMAT,
 				EXIF_TYPE_LONG, 1, NULL, NULL, &offset, sizeof(offset));
 		pointer += count;
 
-		count = smdk4210_exif_write_data(pointer, EXIF_TAG_JPEG_INTERCHANGE_FORMAT_LEN,
+		count = exynos_exif_write_data(pointer, EXIF_TAG_JPEG_INTERCHANGE_FORMAT_LEN,
 				EXIF_TYPE_LONG, 1, NULL, NULL, &exif_thumb_size, sizeof(exif_thumb_size));
 		pointer += count;
 
