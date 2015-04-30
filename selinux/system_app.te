@@ -1,3 +1,1 @@
-allow system_app lcd_device:file rw_file_perms;
-allow system_app vibe_device:file rw_file_perms;
-
+allow system_app sysfs_display:file { getattr open read write };

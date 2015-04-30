@@ -1,2 +1,1 @@
-allow shell proc_sysrq:file getattr;
-allow shell unlabeled:dir getattr;
+allow shell dalvikcache_data_file:file write;
