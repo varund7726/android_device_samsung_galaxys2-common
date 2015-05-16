@@ -175,9 +175,6 @@
     <!-- Workaround for devices with broken keyboards -->
     <!--bool name="config_forceDisableHardwareKeyboard">true</bool-->
 
-    <!-- Boolean to enable stk functionality on Samsung phones -->
-    <bool name="config_samsung_stk">true</bool>
-
     <!-- Whether WiFi display is supported by this device-->
     <!--bool name="config_enableWifiDisplay">true</bool-->
 </resources>
