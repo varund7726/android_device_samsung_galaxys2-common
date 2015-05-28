@@ -1,1 +1,1 @@
-allow dumpstate init:unix_stream_socket connectto;
+unix_socket_connect(dumpstate, dumpstate, init);

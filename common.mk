@@ -44,7 +44,7 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PROPERTY_OVERRIDES += \
     wifi.interface=wlan0 \
-    wifi.supplicant_scan_interval=15
+    wifi.supplicant_scan_interval=15 \
     net.tethering.noprovisioning=true
 
 $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
@@ -58,7 +58,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES := \
     com.android.future.usb.accessory \
     SamsungServiceMode \
-    macloader \
     Torch
 
 # Audio Packages
@@ -73,7 +72,6 @@ PRODUCT_PACKAGES += \
 # HAL
 PRODUCT_PACKAGES += \
     camera.smdk4210 \
-    dhcpcd.conf \
     gralloc.exynos4 \
     hwcomposer.exynos4 \
     libnetcmdiface \
@@ -110,8 +108,8 @@ PRODUCT_PACKAGES += \
 #   libOMX.SEC.VP8.Decoder
 
 PRODUCT_COPY_FILES += \
-    $(COMMON_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
     $(COMMON_PATH)/configs/media_codecs.xml:system/etc/media_codecs.xml \
+    $(COMMON_PATH)/configs/media_profiles.xml:system/etc/media_profiles.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_audio.xml:system/etc/media_codecs_google_audio.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_telephony.xml:system/etc/media_codecs_google_telephony.xml \
     frameworks/av/media/libstagefright/data/media_codecs_google_video.xml:system/etc/media_codecs_google_video.xml \
@@ -151,9 +149,10 @@ PRODUCT_PACKAGES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
-    libwpa_client \
-    hostapd \
     dhcpcd.conf \
+    hostapd \
+    libwpa_client \
+    macloader \
     wpa_supplicant \
     wpa_supplicant.conf
 
@@ -194,11 +193,10 @@ PRODUCT_TAGS += dalvik.gc.type-precise
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
     persist.sys.usb.config=mtp
 
-$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
-
-# USB-OTG
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.isUsbOtgEnabled=true
+
+$(call inherit-product, frameworks/native/build/phone-hdpi-512-dalvik-heap.mk)
 
 # Include exynos4 platform specific parts
 TARGET_HAL_PATH := hardware/samsung/exynos4/hal
