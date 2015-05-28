@@ -47,26 +47,11 @@ on fs
 on charger
 
 # CPU Frequency Governor
-	write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
+    write /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor powersave
 
 # EHCI runtime enable for LPA
-	write /sys/devices/platform/s5p-ehci/power/control auto
-
-# Restorecon
-    restorecon /efs/nv_data.bin
-    restorecon /efs/nv_data.bin.md5
-    restorecon /efs/.nv_core.bak
-    restorecon /efs/.nv_core.bak.md5
-    restorecon /efs/.nv_data.bak
-    restorecon /efs/.nv_data.bak.md5
-    restorecon /efs/.nv_state
-    restorecon /efs/bluetooth/bt_addr
-    restorecon /efs/FactoryApp/factorymode
-    restorecon /efs/FactoryApp/hw_ver
-    restorecon /efs/FactoryApp/keystr
-    restorecon /efs/FactoryApp/serial_no
-    restorecon /efs/imei/mps_code.dat
-
+    write /sys/devices/platform/s5p-ehci/power/control auto   
+    
 on post-fs-data
 # insmod kernel modules
     insmod /system/lib/modules/j4fs.ko
@@ -125,7 +110,10 @@ on post-fs-data
     chmod 0775 /efs/.files/.dx1
     chmod 0775 /efs/.files/.dm33
     chmod 0775 /efs/.files/.mp301
-    
+
+# SELinux restore context for efs files
+    restorecon_recursive /efs
+
 # MTP Device permission.
     chmod 0660 /dev/usb_mtp_gadget
     chown system system /dev/usb_mtp_gadget
@@ -259,6 +247,7 @@ on post-fs-data
     chown system media_rw /sys/class/lcd/panel/gamma_mode
     chown system media_rw /sys/class/lcd/panel/power_reduce
     chown system system /sys/class/backlight/panel/auto_brightness
+    restorecon /sys/class/lcd/panel/power_reduce
 
 # Permissions for mDNIe
     chown system media_rw /sys/class/mdnie/mdnie/mode
@@ -267,6 +256,9 @@ on post-fs-data
     chown system media_rw /sys/class/mdnie/mdnie/negative
     write /sys/class/mdnie/mdnie/scenario 0
     write /sys/class/mdnie/mdnie/mode 1
+    restorecon /sys/class/mdnie/mdnie/scenario
+    restorecon /sys/class/mdnie/mdnie/mode
+    restorecon /sys/class/mdnie/mdnie/negative
 
 # Permissions for uart_sel and usb_sel
     chown system radio /sys/class/sec/switch/uart_sel/value
@@ -353,7 +345,7 @@ service cpboot-daemon /sbin/cbd -d -p 8
     group radio cache inet misc audio sdcard_rw log sdcard_r
 
 service mdnsd /system/bin/mdnsd
-	class main
+    class main
     user mdnsr
     group inet net_raw
     socket mdnsd stream 0660 mdnsr inet
@@ -364,9 +356,6 @@ service charger /sbin/healthd -c
     class charger
     critical
     seclabel u:r:healthd:s0
-
-service daemonsu_daemon /system/xbin/daemonsu --auto-daemon
-    oneshot
 
 service p2p_supplicant /system/bin/wpa_supplicant \
     -iwlan0 -Dnl80211 -c/data/misc/wifi/wpa_supplicant.conf \

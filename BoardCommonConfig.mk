@@ -20,6 +20,7 @@
 BOARD_USES_GENERIC_AUDIO := false
 BOARD_USE_SAMSUNG_COLORFORMAT := true
 USE_SAMSUNG_COLORFORMAT := true
+BOARD_USES_LEGACY_MMAP := true
 TARGET_CPU_ABI := armeabi-v7a
 TARGET_CPU_ABI2 := armeabi
 TARGET_CPU_SMP := true
@@ -32,13 +33,11 @@ ARCH_ARM_HAVE_TLS_REGISTER := true
 EXYNOS4210_ENHANCEMENTS := true
 TARGET_GLOBAL_CFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
 TARGET_GLOBAL_CPPFLAGS += -mtune=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-EXYNOS4_ENHANCEMENTS := true
 
 ifdef EXYNOS4210_ENHANCEMENTS
 COMMON_GLOBAL_CFLAGS += -DEXYNOS4_ENHANCEMENTS
 COMMON_GLOBAL_CFLAGS += -DEXYNOS4210_ENHANCEMENTS
 COMMON_GLOBAL_CFLAGS += -DDISABLE_HW_ID_MATCH_CHECK
-COMMON_GLOBAL_CFLAGS += -DFORCE_SCREENSHOT_CPU_PATH
 endif
 
 BOARD_VENDOR := samsung
@@ -81,7 +80,6 @@ BOARD_EGL_CFG := device/samsung/galaxys2-common/configs/egl.cfg
 USE_OPENGL_RENDERER := true
 COMMON_GLOBAL_CFLAGS += -DFORCE_SCREENSHOT_CPU_PATH -DWORKAROUND_BUG_10194508
 BOARD_EGL_NEEDS_FNW := true
-BOARD_EGL_WORKAROUND_BUG_10194508 := true
 BOARD_EGL_SYSTEMUI_PBSIZE_HACK := true
 BOARD_EGL_SKIP_FIRST_DEQUEUE := true
 
@@ -138,7 +136,6 @@ WIFI_DRIVER_MODULE_ARG           := "firmware_path=/system/etc/wifi/bcmdhd_sta.b
 WIFI_DRIVER_MODULE_AP_ARG        := "firmware_path=/system/etc/wifi/bcmdhd_apsta.bin nvram_path=/system/etc/wifi/nvram_net.txt"
 WIFI_BAND                        := 802_11_ABG
 BOARD_HAVE_SAMSUNG_WIFI          := true
-BOARD_NO_WIFI_HAL		 := false
 
 # Bluetooth
 BOARD_HAVE_BLUETOOTH := true
@@ -168,7 +165,6 @@ BOARD_SEPOLICY_UNION += \
     mediaserver.te \
     netd.te \
     rild.te \
-    shell.te \
     system_app.te \
     system_server.te \
     ueventd.te \
@@ -195,7 +191,6 @@ BOARD_BATTERY_DEVICE_NAME := "battery"
 BOARD_CHARGER_ENABLE_SUSPEND := true
 BOARD_CHARGER_SHOW_PERCENTAGE := true
 BOARD_CUSTOM_BOOTIMG_MK := device/samsung/galaxys2-common/shbootimg.mk
-BOARD_USES_LEGACY_MMAP := true
 
 # Override healthd HAL
 BOARD_HAL_STATIC_LIBRARIES := libhealthd.exynos4
